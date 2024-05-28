@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UrlShorterService {
@@ -23,16 +24,17 @@ public class UrlShorterService {
     public String shortenURL(String longURL) {
         var optionalUrlShorter = urlShorterRepository.findByLongURL(longURL);
         if (optionalUrlShorter.isPresent()) {
-            return buildShortURL(optionalUrlShorter.get().shortURLId());
+            return buildShortURL(optionalUrlShorter.get().getShortURLId());
         }
 
-        var urlShorter = urlShorterRepository.save(ShortenedUrl.of(longURL));
-        return buildShortURL(urlShorter.shortURLId());
+        var shortUrlId = UUID.randomUUID().toString();
+        var urlShorter = urlShorterRepository.save(new ShortenedUrl(longURL, shortUrlId));
+        return buildShortURL(urlShorter.getShortURLId());
     }
 
     public Optional<String> getLongURL(String shortURLId) {
         return urlShorterRepository.findByShortURLId(shortURLId)
-                .map(ShortenedUrl::longURL);
+                .map(ShortenedUrl::getLongURL);
     }
 
     private String buildShortURL(String shortURLId) {

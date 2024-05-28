@@ -1,29 +1,27 @@
 package com.shortify.urlshortener.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
 
 @Entity
-public record ShortenedUrl(
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        Long id,
-        String longURL,
-        String shortURLId
-) {
-        public ShortenedUrl{
-                if (shortURLId() == null){
-                        shortURLId = UUID.randomUUID().toString();
-                }
+@Getter
+@RequiredArgsConstructor
+public class ShortenedUrl {
 
-        }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        public static ShortenedUrl of(String longUrl){
-                return new ShortenedUrl(null,longUrl,null);
-        }
+    @Column(unique = true)
+    private String longURL;
+    private String shortURLId;
+
+    public ShortenedUrl(String longURL, String shortURLId) {
+        this.longURL = longURL;
+        this.shortURLId = shortURLId;
+    }
 }
 
